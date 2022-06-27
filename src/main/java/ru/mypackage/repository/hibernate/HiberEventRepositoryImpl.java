@@ -10,52 +10,53 @@ import java.util.List;
 
 public class HiberEventRepositoryImpl implements EventRepository {
     @Override
-    public List<Event> getAll() {
+    public List<EventEntity> getAll() {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        List<Event> events = session.createQuery("From Event").list();
+        List<EventEntity> eventEntities = session.createQuery("From EventEntity").list();
         transaction.commit();
         session.close();
-        return events;
+        return eventEntities;
     }
 
     @Override
-    public Event getById(Long id) {
+    public EventEntity getById(Long id) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        Event event = (Event) session.createQuery("select e from Event e join fetch e.user joint fetch e.file where e.id =:id")
+        EventEntity eventEntity = (EventEntity) session
+                .createQuery("select e from EventEntity e join fetch e.userEntity join fetch e.fileEntity where e.id =:id")
                 .setParameter("id", id).uniqueResult();
         transaction.commit();
         session.close();
-        return event;
+        return eventEntity;
     }
 
     @Override
-    public Event save(Event event) {
+    public EventEntity save(EventEntity eventEntity) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        session.save(event);
+        session.save(eventEntity);
         transaction.commit();
         session.close();
-        return event;
+        return eventEntity;
     }
 
     @Override
-    public Event update(Event event) {
+    public EventEntity update(EventEntity eventEntity) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        session.update(event);
+        session.update(eventEntity);
         transaction.commit();
         session.close();
-        return event;
+        return eventEntity;
     }
 
     @Override
     public void remove(Long id) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        Event event = session.get(Event.class, id);
-        session.delete(event);
+        EventEntity eventEntity = session.get(EventEntity.class, id);
+        session.delete(eventEntity);
         transaction.commit();
         session.close();
     }

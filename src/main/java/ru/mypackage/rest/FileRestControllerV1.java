@@ -1,16 +1,12 @@
-package ru.mypackage.controller;
+package ru.mypackage.rest;
 
 import com.google.gson.Gson;
-import ru.mypackage.model.File;
-import ru.mypackage.model.User;
-import ru.mypackage.repository.EventRepository;
-import ru.mypackage.repository.FileRepository;
-import ru.mypackage.repository.UserRepository;
+import ru.mypackage.dto.FileDto;
 import ru.mypackage.repository.hibernate.HiberEventRepositoryImpl;
 import ru.mypackage.repository.hibernate.HiberFileRepositoryImpl;
 import ru.mypackage.repository.hibernate.HiberUserRepositoryImpl;
+import ru.mypackage.service.FileService;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -20,73 +16,63 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 
 @WebServlet("/v1/files/*")
 @MultipartConfig
-public class FileServlet extends HttpServlet {
+public class FileRestControllerV1 extends HttpServlet {
 
-    private FileRepository fileRepository = new HiberFileRepositoryImpl();
-    private UserRepository userRepository = new HiberUserRepositoryImpl();
-    private EventRepository eventRepository = new HiberEventRepositoryImpl();
+    private final FileService fileService = new FileService(
+            new HiberFileRepositoryImpl(),
+            new HiberEventRepositoryImpl(),
+            new HiberUserRepositoryImpl()
+    );
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String[] strArray = req.getRequestURI().split("/");
         if(strArray[strArray.length-1].equals("files")){
-            List<File> files = fileRepository.getAll();
-            String jsonFiles = new Gson().toJson(files);
+            List<FileDto> fileDtoList = fileService.getAll();
+            String jsonFiles = new Gson().toJson(fileDtoList);
             resp.setContentType("application/json");
             OutputStream outputStream = resp.getOutputStream();
             outputStream.write(jsonFiles.getBytes());
             outputStream.flush();
         }else{
-            String jsonFile = new Gson().toJson(fileRepository.getById(getId(req)));
+            String jsonFile = new Gson().toJson(fileService.getById(getId(req)));
             resp.setContentType("application/json");
             OutputStream outputStream = resp.getOutputStream();
             outputStream.write(jsonFile.getBytes());
             outputStream.flush();
         }
-
-    }
-
-    @Override
-    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        fileRepository.save(getFile(req));
-
-        User user = userRepository.getById(Long.parseLong(req.getParameter("user_id")));
-
-
-        //create new Event and save it.
-
         resp.setStatus(200);
     }
 
     @Override
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        fileService.save(getFileDto(req),req.getHeader("user_id"));
+        resp.setStatus(201);
+    }
+
+    @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        File file = getFile(req);
-        file.setId(getId(req));
-
-        fileRepository.update(file);
-
-        //create new Event and save it.
-
-        //resp.setStatus(200);
+        // It is nothing to update in a file
+        resp.setStatus(200);
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        fileRepository.remove(getId(req));
+        fileService.delete(getId(req));
+        resp.setStatus(200);
     }
+
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////// private methods ///////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private File getFile(HttpServletRequest req) throws ServletException, IOException {
+    private FileDto getFileDto(HttpServletRequest req) throws ServletException, IOException {
         String destination = "D:\\Java\\temp";
         String location = null;
         long size = 0L;
@@ -104,7 +90,11 @@ public class FileServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        return new File(location, size);
+
+        return FileDto.builder()
+                .location(location)
+                .size(size)
+                .build();
     }
 
     private Long getId(HttpServletRequest req){

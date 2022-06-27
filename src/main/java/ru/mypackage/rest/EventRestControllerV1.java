@@ -1,13 +1,13 @@
-package ru.mypackage.controller;
-
+package ru.mypackage.rest;
 
 import com.google.gson.Gson;
-import ru.mypackage.model.User;
-import ru.mypackage.repository.UserRepository;
+import ru.mypackage.dto.EventDto;
+import ru.mypackage.repository.hibernate.HiberEventRepositoryImpl;
+import ru.mypackage.repository.hibernate.HiberFileRepositoryImpl;
 import ru.mypackage.repository.hibernate.HiberUserRepositoryImpl;
+import ru.mypackage.service.EventService;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,25 +17,26 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@WebServlet("/v1/users/*")
-@MultipartConfig
-public class UserServlet extends HttpServlet {
+@WebServlet("/v1/events/*")
+public class EventRestControllerV1 extends HttpServlet {
 
-    private UserRepository userRepository = new HiberUserRepositoryImpl();
+    private final EventService eventService = new EventService(
+            new HiberEventRepositoryImpl(),
+            new HiberUserRepositoryImpl(),
+            new HiberFileRepositoryImpl());
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String[] strArray = req.getRequestURI().split("/");
-        if(strArray[strArray.length-1].equals("users")){
-            List<User> users = userRepository.getAll();
-            String jsonUsers = new Gson().toJson(users);
+        if(strArray[strArray.length-1].equals("events")){
+            List<EventDto> eventDtos = eventService.getAll();
+            String jsonUsers = new Gson().toJson(eventDtos);
             resp.setContentType("application/json");
             OutputStream outputStream = resp.getOutputStream();
             outputStream.write(jsonUsers.getBytes());
             outputStream.flush();
         }else{
-            String jsonUser = new Gson().toJson(userRepository.getById(getId(req)));
-            System.out.println(jsonUser);
+            String jsonUser = new Gson().toJson(eventService.getById(getId(req)));
             resp.setContentType("application/json");
             OutputStream outputStream = resp.getOutputStream();
             outputStream.write(jsonUser.getBytes());
@@ -45,25 +46,26 @@ public class UserServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String userName = req.getParameter("name");
-        User user = new User(userName, null);
-        userRepository.save(user);
-        //resp.setStatus(200);
-    }
-
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String jsonStr = req.getReader().lines().collect(Collectors.joining());
-        User user = new Gson().fromJson(jsonStr, User.class);
-        userRepository.update(user);
-        //resp.setStatus(200);
+        EventDto eventDto = new Gson().fromJson(jsonStr, EventDto.class);
+        eventService.save(eventDto);
+        resp.setStatus(201);
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        userRepository.remove(getId(req));
-        //resp.setStatus(200);
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Long id = getId(req);
+        String jsonStr = req.getReader().lines().collect(Collectors.joining());
+        EventDto eventDto = new Gson().fromJson(jsonStr, EventDto.class);
+        eventDto.setId(id);
+        eventService.update(eventDto);
+        resp.setStatus(200);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
+        eventService.remove(getId(req));
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////

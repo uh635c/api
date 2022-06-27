@@ -11,10 +11,9 @@
         <property name="show_sql">false</property>
         <property name="format_sql">false</property>
 
-        <mapping class="ru.mypackage.model.User"/>
-        <mapping class="ru.mypackage.model.File"/>
-        <mapping class="ru.mypackage.model.Event"/>
-        <mapping class="ru.mypackage.model.Test"/>
+        <mapping class="ru.mypackage.model.UserEntity"/>
+        <mapping class="ru.mypackage.model.FileEntity"/>
+        <mapping class="ru.mypackage.model.EventEntity"/>
 
     </session-factory>
 </hibernate-configuration>

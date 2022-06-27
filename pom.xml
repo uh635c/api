@@ -15,27 +15,36 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <junit.version>5.7.1</junit.version>
         <mysql.version>8.0.28</mysql.version>
+        <lombok.version>1.18.24</lombok.version>
+        <gson.version>2.9.0</gson.version>
+        <flyway.version>8.2.0</flyway.version>
+        <hibernate.core.version>5.0.7.Final</hibernate.core.version>
+        <javax.servlet.version>4.0.1</javax.servlet.version>
+        <mockito.version>1.10.19</mockito.version>
+        <junit.version>4.13.2</junit.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
+            <version>${javax.servlet.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -45,23 +54,34 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.0.7.Final</version>
+            <version>${hibernate.core.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>8.2.0</version>
+            <version>${flyway.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.9.0</version>
+            <version>${gson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>

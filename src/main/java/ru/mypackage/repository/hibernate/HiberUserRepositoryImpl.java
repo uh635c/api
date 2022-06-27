@@ -10,54 +10,54 @@ import java.util.List;
 
 public class HiberUserRepositoryImpl implements UserRepository {
     @Override
-    public List<User> getAll() {
+    public List<UserEntity> getAll() {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        List<User> users = session.createQuery("select u from User u left join fetch u.events").list();
+        List<UserEntity> userEntities = session
+                .createQuery("from UserEntity").list();
         transaction.commit();
         session.close();
-        System.out.println(users);
-        return users;
+        return userEntities;
     }
 
     @Override
-    public User getById(Long id) {
+    public UserEntity getById(Long id) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        User user = (User) session.createQuery("select u from User u left join fetch u.events where u.id = :id")
+        UserEntity userEntity = (UserEntity) session
+                .createQuery("select u from UserEntity u left join fetch u.eventEntities where u.id = :id")
                 .setParameter("id", id).uniqueResult();
         transaction.commit();
         session.close();
-        System.out.println(user);
-        return user;
+        return userEntity;
     }
 
     @Override
-    public User save(User user) {
+    public UserEntity save(UserEntity userEntity) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        session.save(user);
+        session.save(userEntity);
         transaction.commit();
         session.close();
-        return user;
+        return userEntity;
     }
 
     @Override
-    public User update(User user) {
+    public UserEntity update(UserEntity userEntity) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        session.update(user);
+        session.update(userEntity);
         transaction.commit();
         session.close();
-        return user;
+        return userEntity;
     }
 
     @Override
     public void remove(Long id) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        User user = session.get(User.class, id);
-        session.delete(user);
+        UserEntity userEntity = session.get(UserEntity.class, id);
+        session.delete(userEntity);
         transaction.commit();
         session.close();
     }

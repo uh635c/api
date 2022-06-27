@@ -2,7 +2,7 @@ package ru.mypackage.repository.hibernate;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import ru.mypackage.model.File;
+import ru.mypackage.model.FileEntity;
 import ru.mypackage.repository.FileRepository;
 import ru.mypackage.utils.GetSessionFactory;
 
@@ -10,51 +10,51 @@ import java.util.List;
 
 public class HiberFileRepositoryImpl implements FileRepository {
     @Override
-    public List<File> getAll() {
+    public List<FileEntity> getAll() {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        List<File> files = session.createQuery("From File").list();
+        List<FileEntity> fileEntities = session.createQuery("From FileEntity").list();
         transaction.commit();
         session.close();
-        return files;
+        return fileEntities;
     }
 
     @Override
-    public File getById(Long id) {
+    public FileEntity getById(Long id) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        File file = session.get(File.class, id);
+        FileEntity fileEntity = session.get(FileEntity.class, id);
         transaction.commit();
         session.close();
-        return file;
+        return fileEntity;
     }
 
     @Override
-    public File save(File file) {
+    public FileEntity save(FileEntity fileEntity) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        session.save(file);
+        session.save(fileEntity);
         transaction.commit();
         session.close();
-        return file;
+        return fileEntity;
     }
 
     @Override
-    public File update(File file) {
+    public FileEntity update(FileEntity fileEntity) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        session.update(file);
+        session.update(fileEntity);
         transaction.commit();
         session.close();
-        return file;
+        return fileEntity;
     }
 
     @Override
     public void remove(Long id) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        File file = session.get(File.class, id);
-        session.delete(file);
+        FileEntity fileEntity = session.get(FileEntity.class, id);
+        session.delete(fileEntity);
         transaction.commit();
         session.close();
     }
