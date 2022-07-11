@@ -1,14 +1,8 @@
 package ru.mypackage.dto;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.mypackage.model.EventEntity;
-import ru.mypackage.model.FileEntity;
-import ru.mypackage.model.UserEntity;
 
 import java.util.Date;
 
@@ -23,14 +17,10 @@ public class EventDto {
     private String description;
     @SerializedName("date")
     private Date date;
-    @SerializedName("user_id")
-    private Long userId;
-    @SerializedName("file_id")
-    private Long fileId;
-    @Expose
-    private UserEntity userEntity;
-    @Expose
-    private FileEntity fileEntity;
+    @SerializedName("user")
+    private UserDto userDto;
+    @SerializedName("file")
+    private FileDto fileDto;
 
 
     public static EventDto fromEntity(EventEntity eventEntity){
@@ -38,8 +28,19 @@ public class EventDto {
                 .id(eventEntity.getId())
                 .description(eventEntity.getDescription())
                 .date(eventEntity.getDate())
-                .userId(eventEntity.getUserEntity().getId())
-                .fileId(eventEntity.getFileEntity().getId())
+                .userDto(UserDto.builder()
+                        .id(eventEntity.getUserEntity().getId())
+                        .name(eventEntity.getUserEntity().getName())
+                        .build())
+                .fileDto(FileDto.fromEntity(eventEntity.getFileEntity()))
+                .build();
+    }
+
+    public static EventDto fromEntityForUser(EventEntity eventEntity){
+        return EventDto.builder()
+                .id(eventEntity.getId())
+                .description(eventEntity.getDescription())
+                .date(eventEntity.getDate())
                 .build();
     }
 
@@ -48,8 +49,8 @@ public class EventDto {
                 .id(id)
                 .description(description)
                 .date(date)
-                .userEntity(userEntity)
-                .fileEntity(fileEntity)
+                .userEntity(userDto.toEntity())
+                .fileEntity(fileDto.toEntity())
                 .build();
     }
 

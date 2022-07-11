@@ -2,6 +2,7 @@ package ru.mypackage.rest;
 
 import com.google.gson.Gson;
 import ru.mypackage.dto.FileDto;
+import ru.mypackage.dto.UserDto;
 import ru.mypackage.repository.hibernate.HiberEventRepositoryImpl;
 import ru.mypackage.repository.hibernate.HiberFileRepositoryImpl;
 import ru.mypackage.repository.hibernate.HiberUserRepositoryImpl;
@@ -25,9 +26,7 @@ public class FileRestControllerV1 extends HttpServlet {
 
     private final FileService fileService = new FileService(
             new HiberFileRepositoryImpl(),
-            new HiberEventRepositoryImpl(),
-            new HiberUserRepositoryImpl()
-    );
+            new HiberEventRepositoryImpl());
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -51,7 +50,10 @@ public class FileRestControllerV1 extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        fileService.save(getFileDto(req),req.getHeader("user_id"));
+        UserDto userDto = UserDto.builder()
+                .id(Long.parseLong(req.getHeader("user_id")))
+                .build();
+        fileService.save(getFileDto(req), userDto);
         resp.setStatus(201);
     }
 
@@ -63,7 +65,7 @@ public class FileRestControllerV1 extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        fileService.delete(getId(req));
+        fileService.remove(getId(req));
         resp.setStatus(200);
     }
 

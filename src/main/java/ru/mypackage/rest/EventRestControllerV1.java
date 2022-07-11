@@ -20,10 +20,7 @@ import java.util.stream.Collectors;
 @WebServlet("/v1/events/*")
 public class EventRestControllerV1 extends HttpServlet {
 
-    private final EventService eventService = new EventService(
-            new HiberEventRepositoryImpl(),
-            new HiberUserRepositoryImpl(),
-            new HiberFileRepositoryImpl());
+    private final EventService eventService = new EventService(new HiberEventRepositoryImpl());
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

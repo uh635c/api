@@ -19,9 +19,7 @@ import java.util.stream.Collectors;
 @WebServlet("/v1/users/*")
 public class UserRestControllerV1 extends HttpServlet {
 
-    private final UserService userService = new UserService(
-            new HiberUserRepositoryImpl(),
-            new HiberEventRepositoryImpl());
+    private final UserService userService = new UserService(new HiberUserRepositoryImpl());
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

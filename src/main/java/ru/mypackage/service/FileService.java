@@ -1,6 +1,8 @@
 package ru.mypackage.service;
 
+import ru.mypackage.dto.EventDto;
 import ru.mypackage.dto.FileDto;
+import ru.mypackage.dto.UserDto;
 import ru.mypackage.model.*;
 import ru.mypackage.repository.*;
 import ru.mypackage.repository.hibernate.*;
@@ -13,12 +15,11 @@ public class FileService {
 
     private final FileRepository fileRepository ;
     private final EventRepository eventRepository;
-    private final UserRepository userRepository;
 
-    public FileService(FileRepository fileRepository, EventRepository eventRepository, UserRepository userRepository) {
+    public FileService(FileRepository fileRepository, EventRepository eventRepository) {
         this.fileRepository = fileRepository;
         this.eventRepository = eventRepository;
-        this.userRepository = userRepository;
+
     }
 
     public FileDto getById(Long id) {
@@ -30,16 +31,17 @@ public class FileService {
         return fileDtoList.stream().map(FileDto::fromEntity).collect(Collectors.toList());
     }
 
-    public EventEntity save(FileDto fileDto, String userId){
-        FileEntity file = fileRepository.save(fileDto.toEntity());
+    public EventEntity save(FileDto fileDto, UserDto userDto){
+        fileDto = FileDto.fromEntity(fileRepository.save(fileDto.toEntity()));
 
-        UserEntity userEntity = userRepository.getById(Long.parseLong(userId));
-        EventEntity eventEntity = EventEntity.builder()
+        EventDto eventDto = EventDto.builder()
                 .description("creating a file")
                 .date(new Date())
-                .userEntity(userEntity)
-                .fileEntity(file)
+                .userDto(userDto)
+                .fileDto(fileDto)
                 .build();
+        EventEntity eventEntity = eventDto.toEntity();
+
         return eventRepository.save(eventEntity);
     }
 
@@ -47,11 +49,7 @@ public class FileService {
         // It is nothing to update in a file
     }
 
-    public void delete(Long id){
+    public void remove(Long id){
         fileRepository.remove(id);
     }
-
-
-
-
 }

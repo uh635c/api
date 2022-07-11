@@ -22,7 +22,7 @@ public class EventEntity {
     private String description;
 
     @Column(name = "date")
-    @Expose
+    @EqualsAndHashCode.Exclude
     private Date date;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -8,19 +8,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import ru.mypackage.dto.FileDto;
-import ru.mypackage.model.EventEntity;
-import ru.mypackage.model.FileEntity;
-import ru.mypackage.model.UserEntity;
-import ru.mypackage.repository.EventRepository;
-import ru.mypackage.repository.FileRepository;
-import ru.mypackage.repository.UserRepository;
+import ru.mypackage.dto.*;
+import ru.mypackage.model.*;
+import ru.mypackage.repository.*;
 import ru.mypackage.service.FileService;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FileServiceTest {
@@ -28,8 +21,7 @@ public class FileServiceTest {
     EventRepository eventRepositoryMock;
     @Mock
     FileRepository fileRepositoryMock;
-    @Mock
-    UserRepository userRepositoryMock;
+
     @InjectMocks
     FileService fileService;
 
@@ -46,7 +38,7 @@ public class FileServiceTest {
                 .size(100L)
                 .build();
 
-        Mockito.when((fileRepositoryMock.getById(Mockito.any()))).thenReturn(fileEntityActual);
+        Mockito.when((fileRepositoryMock.getById(Mockito.any(Long.class)))).thenReturn(fileEntityActual);
 
         Assert.assertEquals(fileDtoExpected, fileService.getById(1L));
         Mockito.verify(fileRepositoryMock).getById(1L);
@@ -64,40 +56,44 @@ public class FileServiceTest {
 
         Mockito.when(fileRepositoryMock.getAll()).thenReturn(fileEntitiesActual);
 
-        Assert.assertEquals(fileService.getAll(), fileDtosExpected);
+        Assert.assertEquals(fileDtosExpected, fileService.getAll());
         Mockito.verify(fileRepositoryMock).getAll();
     }
 
     @Test
     public void shouldReturnSavedEventEntity(){
-        UserEntity userEntity = UserEntity.builder()
-                .id(1L).name("Name1")
-                .build();
-        FileEntity fileEntity = FileEntity.builder()
-                .id(1L).location("location1").size(100L)
-                .build();
-        EventEntity eventEntityActual = EventEntity.builder()
-                .id(1L).description("description1").date(new Date()).userEntity(userEntity).fileEntity(fileEntity)
-                .build();
-        userEntity.setEventEntities(Arrays.asList(eventEntityActual));
-
-        EventEntity eventEntityExpected = EventEntity.builder()
-                .id(eventEntityActual.getId())
-                .description(eventEntityActual.getDescription())
-                .date(eventEntityActual.getDate())
-                .userEntity(eventEntityActual.getUserEntity())
-                .fileEntity(eventEntityActual.getFileEntity())
-                .build();
-
         FileDto fileDto = FileDto.builder()
                 .id(1L).location("location1").size(100L)
                 .build();
 
-        Mockito.when(fileRepositoryMock.save(fileEntity)).thenReturn(fileEntity);
-        Mockito.when(userRepositoryMock.getById(1L)).thenReturn(userEntity);
+        UserDto userDto = UserDto.builder()
+                .id(1L).name("Name1")
+                .build();
+
+        FileEntity fileEntity = fileDto.toEntity();
+
+        EventDto eventDto = EventDto.builder()
+                .description("creating a file").date(new Date()).userDto(userDto).fileDto(fileDto)
+                .build();
+
+        EventEntity eventEntityActual = eventDto.toEntity();
+
+        EventEntity eventEntityExpected = eventDto.toEntity();
+
+        Mockito.when(fileRepositoryMock.save(Mockito.any(FileEntity.class))).thenReturn(fileEntity);
         Mockito.when(eventRepositoryMock.save(eventEntityActual)).thenReturn(eventEntityActual);
 
-        Assert.assertEquals(eventEntityActual, fileService.save(fileDto,"1"));
+        Assert.assertEquals(eventEntityExpected, fileService.save(fileDto,userDto));
+        Mockito.verify(fileRepositoryMock).save(Mockito.any(FileEntity.class));
+        Mockito.verify(eventRepositoryMock).save(eventEntityActual);
+    }
 
+    // fileService.update(FileDto fileDto) do nothing and do not need to be tested.
+
+    @Test
+    public void ShouldCallRemoveMethod(){
+        fileService.remove(1L);
+
+        Mockito.verify(fileRepositoryMock).remove(1L);
     }
 }
