@@ -15,7 +15,7 @@ public class UserService {
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-            }
+    }
 
     public UserDto getById(Long id){
         UserEntity userEntity = userRepository.getById(id);
@@ -24,7 +24,7 @@ public class UserService {
 
     public List<UserDto> getAll(){
         List<UserEntity> userEntities = userRepository.getAll();
-        return userEntities.stream().map(u->getById(u.getId())).collect(Collectors.toList());
+        return userEntities.stream().map(UserDto::fromEntity).collect(Collectors.toList());
     }
 
     public UserEntity save(UserDto userDto){
@@ -38,6 +38,5 @@ public class UserService {
     public void remove(Long id){
         userRepository.remove(id);
     }
-
 
 }

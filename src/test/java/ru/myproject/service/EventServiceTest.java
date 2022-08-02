@@ -83,12 +83,8 @@ public class EventServiceTest {
         List<EventDto> eventDtoList = eventEntityList.stream().map(EventDto::fromEntity).collect(Collectors.toList());
 
         Mockito.when(eventRepositoryMock.getAll()).thenReturn(eventEntityList);
-        Mockito.when(eventRepositoryMock.getById(1L)).thenReturn(eventEntity1);
-        Mockito.when(eventRepositoryMock.getById(2L)).thenReturn(eventEntity2);
 
         Assert.assertEquals(eventDtoList, eventService.getAll());
-        Mockito.verify(eventRepositoryMock).getById(1L);
-        Mockito.verify(eventRepositoryMock).getById(2L);
         Mockito.verify(eventRepositoryMock).getAll();
     }
 

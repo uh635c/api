@@ -85,13 +85,9 @@ public class UserServiceTest {
         List<UserDto> userDtoList = userEntityList.stream().map(UserDto::fromEntity).collect(Collectors.toList());
 
         Mockito.when(userRepositoryMock.getAll()).thenReturn(userEntityList);
-        Mockito.when(userRepositoryMock.getById(1L)).thenReturn(userEntity1);
-        Mockito.when(userRepositoryMock.getById(2L)).thenReturn(userEntity2);
 
         Assert.assertEquals(userDtoList, userService.getAll());
         Mockito.verify(userRepositoryMock).getAll();
-        Mockito.verify(userRepositoryMock).getById(1L);
-        Mockito.verify(userRepositoryMock).getById(2L);
     }
 
     @Test

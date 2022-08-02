@@ -1,5 +1,7 @@
 package ru.mypackage.repository.hibernate;
 
+import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import ru.mypackage.model.*;
@@ -13,7 +15,10 @@ public class HiberEventRepositoryImpl implements EventRepository {
     public List<EventEntity> getAll() {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        List<EventEntity> eventEntities = session.createQuery("From EventEntity").list();
+        Query query = session.createQuery("From EventEntity e left join fetch e.fileEntity" +
+                " left join fetch e.userEntity");
+        query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        List<EventEntity> eventEntities = query.list();
         transaction.commit();
         session.close();
         return eventEntities;

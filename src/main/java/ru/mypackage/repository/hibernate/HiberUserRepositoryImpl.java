@@ -1,5 +1,7 @@
 package ru.mypackage.repository.hibernate;
 
+import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import ru.mypackage.model.*;
@@ -13,8 +15,9 @@ public class HiberUserRepositoryImpl implements UserRepository {
     public List<UserEntity> getAll() {
         Session session = GetSessionFactory.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        List<UserEntity> userEntities = session
-                .createQuery("from UserEntity").list();
+        Query query = session.createQuery("from UserEntity u left join fetch u.eventEntities");
+        query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        List<UserEntity> userEntities = query.list();
         transaction.commit();
         session.close();
         return userEntities;

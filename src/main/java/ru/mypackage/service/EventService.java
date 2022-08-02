@@ -22,7 +22,7 @@ public class EventService {
 
     public List<EventDto> getAll(){
         List<EventEntity> eventEntities = eventRepository.getAll();
-        return eventEntities.stream().map(e-> getById(e.getId())).collect(Collectors.toList());
+        return eventEntities.stream().map(EventDto::fromEntity).collect(Collectors.toList());
     }
 
     public EventEntity save(EventDto eventDto){

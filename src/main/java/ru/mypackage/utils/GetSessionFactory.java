@@ -21,5 +21,4 @@ public class GetSessionFactory {
         }
         return sessionFactory;
     }
-
 }

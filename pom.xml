@@ -73,6 +73,11 @@
             <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -80,6 +85,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -102,7 +108,7 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>8.2.0</version>
                 <configuration>
-                    <url>jdbc:mysql://localhost:3306/hibernate_books</url>
+                    <url>jdbc:mysql://localhost:3306/file_storage</url>
                     <user>root</user>
                     <password>Mysql_pass_00</password>
                 </configuration>
