@@ -12,9 +12,7 @@ public class HiberFileRepositoryImpl implements FileRepository {
     @Override
     public List<FileEntity> getAll() {
         Session session = GetSessionFactory.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
         List<FileEntity> fileEntities = session.createQuery("From FileEntity").list();
-        transaction.commit();
         session.close();
         return fileEntities;
     }
@@ -22,9 +20,7 @@ public class HiberFileRepositoryImpl implements FileRepository {
     @Override
     public FileEntity getById(Long id) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
         FileEntity fileEntity = session.get(FileEntity.class, id);
-        transaction.commit();
         session.close();
         return fileEntity;
     }

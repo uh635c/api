@@ -14,11 +14,9 @@ public class HiberUserRepositoryImpl implements UserRepository {
     @Override
     public List<UserEntity> getAll() {
         Session session = GetSessionFactory.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
         Query query = session.createQuery("from UserEntity u left join fetch u.eventEntities");
         query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         List<UserEntity> userEntities = query.list();
-        transaction.commit();
         session.close();
         return userEntities;
     }
@@ -26,11 +24,9 @@ public class HiberUserRepositoryImpl implements UserRepository {
     @Override
     public UserEntity getById(Long id) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
         UserEntity userEntity = (UserEntity) session
                 .createQuery("select u from UserEntity u left join fetch u.eventEntities where u.id = :id")
                 .setParameter("id", id).uniqueResult();
-        transaction.commit();
         session.close();
         return userEntity;
     }

@@ -14,12 +14,10 @@ public class HiberEventRepositoryImpl implements EventRepository {
     @Override
     public List<EventEntity> getAll() {
         Session session = GetSessionFactory.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
         Query query = session.createQuery("From EventEntity e left join fetch e.fileEntity" +
                 " left join fetch e.userEntity");
         query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         List<EventEntity> eventEntities = query.list();
-        transaction.commit();
         session.close();
         return eventEntities;
     }
@@ -27,11 +25,9 @@ public class HiberEventRepositoryImpl implements EventRepository {
     @Override
     public EventEntity getById(Long id) {
         Session session = GetSessionFactory.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
         EventEntity eventEntity = (EventEntity) session
                 .createQuery("select e from EventEntity e join fetch e.userEntity join fetch e.fileEntity where e.id =:id")
                 .setParameter("id", id).uniqueResult();
-        transaction.commit();
         session.close();
         return eventEntity;
     }
