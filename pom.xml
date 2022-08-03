@@ -17,7 +17,7 @@
         <mysql.version>8.0.28</mysql.version>
         <lombok.version>1.18.24</lombok.version>
         <gson.version>2.9.0</gson.version>
-        <flyway.version>8.2.0</flyway.version>
+        <flyway.version>5.2.4</flyway.version>
         <hibernate.core.version>5.0.7.Final</hibernate.core.version>
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <mockito.version>1.10.19</mockito.version>
@@ -106,11 +106,11 @@
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
-                <version>8.2.0</version>
+                <version>5.2.4</version>
                 <configuration>
-                    <url>jdbc:mysql://localhost:3306/file_storage</url>
-                    <user>root</user>
-                    <password>Mysql_pass_00</password>
+                    <url>${env.DATABASE_URL}</url>
+                    <user>${env.DATABASE_USERNAME}</user>
+                    <password>${env.DATABASE_PASS}</password>
                 </configuration>
                 <dependencies>
                     <dependency>
